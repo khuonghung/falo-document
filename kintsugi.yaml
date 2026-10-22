@@ -1,0 +1,27 @@
+# Rendered by Kintsugi from the project settings (Projects in the portal).
+# unitKinds, pipelines, autoCommitPaths and policy show defaults until the portal manages them.
+# Reference: docs/reference/document-repo.md
+
+schemaVersion: 1
+project:
+  id: falohub
+  name: FaloHub
+document:
+  server: github
+  path: khuonghung/falo-document
+unitKinds: [module]
+applications:
+  - id: falo-application
+    name: Falo Application
+    repos:
+      - {server: github, path: falo-basis/falo-skeleton, role: legacy}
+      - {server: github, path: falo-basis/falo-unities, role: legacy}
+pipelines: []
+autoCommitPaths:
+  - 10-applications/*/02-modern/*/*/README.md
+  - 10-applications/*/02-modern/*/*/task.md
+  - 10-applications/*/_generated/**
+  - 10-applications/*/01-legacy/plan.md
+policy:
+  harnesses: [claude-code, copilot, codex, chatgpt]
+  requireCommitTrailer: true

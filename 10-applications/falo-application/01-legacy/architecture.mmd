@@ -1,0 +1,64 @@
+%% Legacy sources falo-skeleton@3fc7e7014615030021a2e33ad254c91cec92ca22,falo-unities@53bc9e727e3e014f4ed0d721ee16b697fbbf14fd
+
+flowchart LR
+    classDef ui fill:rgba(37,99,235,0.12),stroke:#2563eb,color:#1e3a8a
+    classDef service fill:rgba(5,150,105,0.12),stroke:#059669,color:#064e3b
+    classDef batch fill:rgba(217,119,6,0.12),stroke:#d97706,color:#78350f
+    classDef store fill:rgba(107,114,128,0.12),stroke:#6b7280,color:#374151
+    classDef external fill:rgba(190,24,93,0.12),stroke:#be185d,color:#831843
+
+    subgraph clients["Entry points and clients"]
+        spa["Vue 3 SPA (falo-unities)<br/>7 role back-offices +<br/>public portal"]:::ui
+    end
+
+    subgraph domains["Domains — falo-skeleton Spring Boot monolith"]
+        auth["Auth and access control<br/>JWT + UC001–UC111<br/>user-case interceptor"]:::service
+        orgreg["Organization registration<br/>& verification<br/>register → live sync"]:::service
+        projreg["Project registration<br/>& verification"]:::service
+        workspace["Project workspace<br/>task management<br/>kanban, pages, cycles"]:::service
+        publication["Publication<br/>& public portal"]:::service
+        volunteer["Volunteer recruitment<br/>& interviews"]:::service
+        notify["Notifications & realtime<br/>Socket.IO, JWT auth"]:::service
+        admin["Employee & org-account<br/>administration"]:::service
+        platform["Platform services<br/>config, master data,<br/>mail, S3 upload"]:::service
+    end
+
+    subgraph shared["Shared — used by all domains"]
+        core["libs/core base library<br/>CQRS pipeline, JWT,<br/>cache, mail helpers"]:::service
+        pg[("PostgreSQL<br/>12 schemas / 54 tables")]:::store
+    end
+
+    subgraph datastores["Data stores"]
+        kafka[("Kafka bus (in-monolith)<br/>8 topics:<br/>register + sync")]:::batch
+        redis[("Redis cache<br/>user info,<br/>page locks")]:::store
+    end
+
+    subgraph externaltier["External services"]
+        mailgun["Mailgun<br/>transactional mail"]:::external
+        s3["AWS S3<br/>attachments, CVs"]:::external
+    end
+
+    spa -->|"login"| auth
+    spa -->|"kanban UI"| workspace
+    spa -->|"public portal"| publication
+    spa -->|"apply forms"| volunteer
+
+    projreg -->|"org must exist"| orgreg
+    workspace -->|"projects via sync"| projreg
+    publication -->|"project versions"| workspace
+    volunteer -->|"per project"| workspace
+    orgreg -->|"root accounts"| auth
+    projreg -->|"member accounts"| auth
+    volunteer -->|"volunteer accounts"| auth
+    admin -->|"accounts, roles"| auth
+    notify -->|"socket JWT auth"| auth
+    orgreg -->|"status events"| notify
+    volunteer -->|"interview events"| notify
+    orgreg -->|"mail sending"| platform
+
+    orgreg -->|"register org"| kafka
+    projreg -->|"register project"| kafka
+    volunteer -->|"register volunteer"| kafka
+    workspace -.->|"page locks"| redis
+    platform -.->|"outbound mail"| mailgun
+    platform -.->|"file uploads"| s3

@@ -1,29 +1,29 @@
-%% Legacy sources falo-skeleton@3fc7e7014615030021a2e33ad254c91cec92ca22,falo-unities@53bc9e727e3e014f4ed0d721ee16b697fbbf14fd
+%% Legacy sources falo-skeleton@3fc7e7014615030021a2e33ad254c91cec92ca22, falo-unities@53bc9e727e3e014f4ed0d721ee16b697fbbf14fd
 
 flowchart LR
-    classDef ui fill:rgba(37,99,235,0.12),stroke:#2563eb,color:#1e3a8a
-    classDef service fill:rgba(5,150,105,0.12),stroke:#059669,color:#064e3b
-    classDef batch fill:rgba(217,119,6,0.12),stroke:#d97706,color:#78350f
-    classDef store fill:rgba(107,114,128,0.12),stroke:#6b7280,color:#374151
-    classDef external fill:rgba(190,24,93,0.12),stroke:#be185d,color:#831843
+    classDef ui fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef service fill:#dcfce7,stroke:#059669,color:#064e3b
+    classDef batch fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef store fill:#e5e7eb,stroke:#6b7280,color:#374151
+    classDef external fill:#fce7f3,stroke:#be185d,color:#831843
 
     subgraph clients["Entry points and clients"]
         spa["Vue 3 SPA (falo-unities)<br/>7 role back-offices +<br/>public portal"]:::ui
     end
 
-    subgraph domains["Domains — falo-skeleton Spring Boot monolith"]
-        auth["Auth and access control<br/>JWT + UC001–UC111<br/>user-case interceptor"]:::service
-        orgreg["Organization registration<br/>& verification<br/>register → live sync"]:::service
-        projreg["Project registration<br/>& verification"]:::service
+    subgraph domains["Domains - falo-skeleton Spring Boot monolith"]
+        auth["Auth and access control<br/>JWT + UC001-UC111<br/>user-case interceptor"]:::service
+        orgreg["Organization registration<br/>verification<br/>register -> live sync"]:::service
+        projreg["Project registration<br/>verification"]:::service
         workspace["Project workspace<br/>task management<br/>kanban, pages, cycles"]:::service
-        publication["Publication<br/>& public portal"]:::service
-        volunteer["Volunteer recruitment<br/>& interviews"]:::service
-        notify["Notifications & realtime<br/>Socket.IO, JWT auth"]:::service
-        admin["Employee & org-account<br/>administration"]:::service
+        publication["Publication<br/>public portal"]:::service
+        volunteer["Volunteer recruitment<br/>interviews"]:::service
+        notify["Notifications and realtime<br/>Socket.IO, JWT auth"]:::service
+        admin["Employee and org-account<br/>administration"]:::service
         platform["Platform services<br/>config, master data,<br/>mail, S3 upload"]:::service
     end
 
-    subgraph shared["Shared — used by all domains"]
+    subgraph shared["Shared - used by all domains"]
         core["libs/core base library<br/>CQRS pipeline, JWT,<br/>cache, mail helpers"]:::service
         pg[("PostgreSQL<br/>12 schemas / 54 tables")]:::store
     end
